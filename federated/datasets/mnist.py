@@ -5,7 +5,13 @@ from . import Data
 
 
 class Mnist(Data):
-    def __init__(self, n_clients, batch_size, path, alpha=100, plot_path=None, flag=False):
+    def __init__(self,
+                 n_clients: int,
+                 batch_size: int,
+                 path: str,
+                 alpha: float = 100,
+                 plot_path=None,
+                 flag=False):
         super().__init__(plot_path)
         transform = Compose([ToTensor(), Normalize((0.1307,), (0.3081,))])
         self.train_set = MNIST(root=path, train=True, transform=transform)
