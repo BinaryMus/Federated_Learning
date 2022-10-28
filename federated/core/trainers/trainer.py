@@ -25,7 +25,7 @@ class Trainer:
                  ):
         self.n_clients = n_clients  # 客户端数量
         self.model = model  # 模型架构
-        self.data = data  # 数据
+        self.data_name = data  # 数据
         self.optimizer = optimizer  # 优化器
         self.lr = lr  # 学习率
         self.batch_size = batch_size  # mini-batch大小
@@ -38,16 +38,16 @@ class Trainer:
         self.acc1_lst = []
         self.acc5_lst = []
 
-        data = all_data[data](self.n_clients,
-                              self.batch_size,
-                              self.path,
-                              self.alpha,
-                              )
+        self.data = all_data[data](self.n_clients,
+                                   self.batch_size,
+                                   self.path,
+                                   self.alpha,
+                                   )
         self.clients = [all_client[algorithm]
                         (i,
                          self.n_clients,
                          all_arch[model](),
-                         data.trainLoader[i],
+                         self.data.trainLoader[i],
                          local_epoch,
                          self.optimizer,
                          self.lr,
@@ -55,13 +55,13 @@ class Trainer:
         self.server = all_server[algorithm](global_epoch,
                                             self.clients,
                                             SimpleCNN(),
-                                            data.validationLoader,
+                                            self.data.validationLoader,
                                             self.device)
         print(f"TRAINER INFO: "
               f"\n\tclient number: {n_clients}"
               f"\n\tmodel: {model}"
               f"\n\toptimizer: {optimizer}, learning_rate: {lr}"
-              f"\n\tdata path: {path}, alpha: {alpha}, batch_size: {batch_size}"
+              f"\n\tdata: {data} data path: {path}, alpha: {alpha}, batch_size: {batch_size}"
               f"\n\tlocal_epoch: {local_epoch}, global_epoch: {global_epoch}"
               f"\n\talgorithm: {algorithm}"
               f"\n\tdevice: {device}")
@@ -72,7 +72,7 @@ class Trainer:
             for idx in range(self.n_clients):
                 self.clients[idx].train_loop()
 
-            acc1, acc5 = self.server.pull_push()
+            acc1, acc5 = self.server.pull_push(self.data.client_nums, self.data.total)
             self.acc1_lst.append(acc1)
             self.acc5_lst.append(acc5)
             print(

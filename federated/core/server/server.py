@@ -22,7 +22,7 @@ class BaseServer:
         self.device = device
         self.model = model.to(self.device)  # 全局模型
 
-    def pull(self):
+    def pull(self, client_nums, total):
         """
         接受clients参数
         :return:
@@ -30,8 +30,7 @@ class BaseServer:
         clear_parameter(self.model)
         for key in self.model.state_dict():
             for idx in range(self.n_clients):
-                self.model.state_dict()[key] += self.clients[idx].model.state_dict()[key]
-            self.model.state_dict()[key] /= self.n_clients
+                self.model.state_dict()[key] += (client_nums[idx] / total) * self.clients[idx].model.state_dict()[key]
 
     def push(self):
         """
@@ -43,8 +42,8 @@ class BaseServer:
             for key in self.clients[idx].model.state_dict():
                 self.clients[idx].model.state_dict()[key] += self.model.state_dict()[key]
 
-    def pull_push(self):
-        self.pull()
+    def pull_push(self, client_nums, total):
+        self.pull(client_nums, total)
         self.push()
         return self.validate()
 

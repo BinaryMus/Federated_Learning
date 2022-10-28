@@ -4,6 +4,10 @@ import torch
 
 
 class SimpleCNN(Model):
+    """
+    只能用于MNIST
+    """
+
     def __init__(self):
         super(SimpleCNN, self).__init__()
         self.conv1 = torch.nn.Conv2d(1, 4, (3, 3))  # 4 * 13 * 13
