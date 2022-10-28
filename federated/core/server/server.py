@@ -1,18 +1,17 @@
 import torch
 from typing import List
-from ..clients import Client
 from ..utils import clear_parameter
 from torch.utils.data import DataLoader
 
 
-class Server:
+class BaseServer:
     """
     FedAvg push和pull 都是传递参数
     """
 
     def __init__(self,
                  epoch: int,
-                 clients: List[Client],
+                 clients: List,
                  model: torch.nn.Module,
                  data: DataLoader,
                  device: str):
@@ -43,6 +42,11 @@ class Server:
             clear_parameter(self.clients[idx].model)
             for key in self.clients[idx].model.state_dict():
                 self.clients[idx].model.state_dict()[key] += self.model.state_dict()[key]
+
+    def pull_push(self):
+        self.pull()
+        self.push()
+        return self.validate()
 
     def validate(self):
         """

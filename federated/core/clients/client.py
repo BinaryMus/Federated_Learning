@@ -1,8 +1,10 @@
 import torch
 from torch.utils.data import DataLoader
 
+all_optim = {"SGD": torch.optim.SGD}
 
-class Client:
+
+class BaseClient:
     def __init__(self,
                  index: int,
                  n_clients: int,
@@ -22,10 +24,7 @@ class Client:
         self.lr = lr  # 学习率
         self.epoch = epoch  # 本地多轮迭代次数
         self.loss = []  # 本地训练的损失
-        if optimizer == "SGD":  # 优化器
-            self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.lr)
-        else:
-            assert True, "暂无其他优化器"
+        self.optimizer = all_optim[optimizer](self.model.parameters(), lr=self.lr)
 
     def train(self):
         """
@@ -54,7 +53,7 @@ class Client:
         for epoch in range(self.epoch):
             loss_avg = self.train()
             self.loss.append(loss_avg)
-            print(f"{str(self)} Local Epoch[{epoch}|{self.epoch}] Loss:{round(loss_avg, 3)}")
+            print(f"CLIENT INFO: {str(self)} Local Epoch[{epoch}|{self.epoch}] Loss:{round(loss_avg, 3)}")
 
     def __str__(self):
         return f"Client[{self.index + 1}|{self.n_clients}]"
