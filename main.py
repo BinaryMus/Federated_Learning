@@ -3,10 +3,10 @@ from federated.core.utils import seed_it
 
 if __name__ == '__main__':
     seed_it(42)
-    trainer = Trainer(n_clients=10,
+    trainer = Trainer(n_clients=2,
                       optimizer="SGD",
-                      model="SimpleCNN",
-                      data="MNIST",
+                      model="VGG11",
+                      data="CIFAR10",
                       lr=0.01,
                       batch_size=64,
                       path="./datasets",

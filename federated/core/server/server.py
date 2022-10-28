@@ -29,8 +29,10 @@ class BaseServer:
         """
         clear_parameter(self.model)
         for key in self.model.state_dict():
+            dtype = self.clients[0].model.state_dict()[key].dtype
             for idx in range(self.n_clients):
-                self.model.state_dict()[key] += (client_nums[idx] / total) * self.clients[idx].model.state_dict()[key]
+                self.model.state_dict()[key] += (
+                        (client_nums[idx] / total) * self.clients[idx].model.state_dict()[key]).to(dtype)
 
     def push(self):
         """

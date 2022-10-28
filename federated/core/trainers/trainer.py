@@ -2,8 +2,8 @@ from .. import BaseClient, BaseServer
 from ...models import *
 from ...datasets import *
 
-all_arch = {"SimpleCNN": SimpleCNN}
-all_data = {"MNIST": Mnist}
+all_arch = {"SimpleCNN": SimpleCNN, "VGG11": VGG11, "ResNet18": Resnet18}
+all_data = {"MNIST": Mnist, "CIFAR10": Cifar10}
 all_server = {"FedAVG": BaseServer}
 all_client = {"FedAVG": BaseClient}
 
@@ -46,7 +46,7 @@ class Trainer:
         self.clients = [all_client[algorithm]
                         (i,
                          self.n_clients,
-                         all_arch[model](),
+                         all_arch[model](num_classes=len(self.data.train_set.classes), ),
                          self.data.trainLoader[i],
                          local_epoch,
                          self.optimizer,
@@ -54,14 +54,14 @@ class Trainer:
                          self.device, ) for i in range(self.n_clients)]
         self.server = all_server[algorithm](global_epoch,
                                             self.clients,
-                                            SimpleCNN(),
+                                            all_arch[model](num_classes=len(self.data.train_set.classes), ),
                                             self.data.validationLoader,
                                             self.device)
         print(f"TRAINER INFO: "
               f"\n\tclient number: {n_clients}"
               f"\n\tmodel: {model}"
               f"\n\toptimizer: {optimizer}, learning_rate: {lr}"
-              f"\n\tdata: {data} data path: {path}, alpha: {alpha}, batch_size: {batch_size}"
+              f"\n\tdata: {data} data_path: {path}, alpha: {alpha}, batch_size: {batch_size}"
               f"\n\tlocal_epoch: {local_epoch}, global_epoch: {global_epoch}"
               f"\n\talgorithm: {algorithm}"
               f"\n\tdevice: {device}")

@@ -53,7 +53,7 @@ class BaseClient:
         for epoch in range(self.epoch):
             loss_avg = self.train()
             self.loss.append(loss_avg)
-            print(f"CLIENT INFO: {str(self)} Local Epoch[{epoch}|{self.epoch}] Loss:{round(loss_avg, 3)}")
+            print(f"CLIENT INFO: {str(self)} Local Epoch[{epoch + 1}|{self.epoch}] Loss:{round(loss_avg, 3)}")
 
     def __str__(self):
         return f"Client[{self.index + 1}|{self.n_clients}]"
