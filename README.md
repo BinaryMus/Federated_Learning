@@ -1,20 +1,11 @@
 # Federated_Learning
 
 ``````
-from federated.core.trainers import Trainer
+sh run.sh
+``````
 
-if __name__ == '__main__':
-    trainer = Trainer(n_clients=10,
-                      optimizer="SGD",
-                      model="SimpleCNN",
-                      data="MNIST",
-                      lr=0.01,
-                      batch_size=64,
-                      path="./datasets",
-                      alpha=100,
-                      local_epoch=3,
-                      global_epoch=5,
-                      device="cpu")
-    trainer.train()
+or
 
+``````
+python3 main.py --config="config.yml" --seed=42
 ``````

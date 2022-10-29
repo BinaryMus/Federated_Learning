@@ -1,0 +1,31 @@
+# The number of clients
+n_clients: 10
+
+# optimizer
+optimizer:
+  type: "SGD"
+  lr: 0.01
+
+# model
+model: "SimpleCNN"
+
+# dataset
+data: "MNIST"
+
+# mini-batch size
+batch_size: 64
+
+# the path of dataset
+path: "./datasets"
+
+# the parameter to control NON-IID
+alpha: 100
+
+# local training round
+local_epoch: 3
+
+# global training roud
+global_epoch: 10
+
+# device
+device: "cuda"

@@ -18,7 +18,7 @@ class Mnist(Data):
         self.validate_set = MNIST(root=path, train=False, transform=transform)
         self.trainLoader, self.client_nums, self.total = \
             self.train_loader(alpha, n_clients, batch_size, flag)
-        self.validationLoader = self.validate_loader(batch_size)
+        self.validationLoader = self.validate_loader(batch_size * n_clients)
 
     def __str__(self):
         return "MNIST"

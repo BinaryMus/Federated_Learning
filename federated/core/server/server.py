@@ -24,7 +24,7 @@ class BaseServer:
 
     def pull(self, client_nums, total):
         """
-        接受clients参数
+        接受clients参数并聚合
         :return:
         """
         clear_parameter(self.model)

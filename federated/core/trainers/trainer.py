@@ -68,6 +68,7 @@ class Trainer:
 
     def train(self):
         print("TRAINER INFO: Start Training!")
+        self.server.push()
         for epoch in range(self.global_epoch):
             for idx in range(self.n_clients):
                 self.clients[idx].train_loop()

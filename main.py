@@ -1,17 +1,18 @@
-from federated.core.trainers import Trainer
+import argparse
+
+from federated.core.configs import Config
 from federated.core.utils import seed_it
 
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--config', default="./config.yml", type=str, help='config file')
+    parser.add_argument('--seed', default=42, type=int)
+    arg = parser.parse_args()
+    seed_it(arg.seed)
+    config = Config(arg.config)
+    config.run()
+
+
 if __name__ == '__main__':
-    seed_it(42)
-    trainer = Trainer(n_clients=2,
-                      optimizer="SGD",
-                      model="VGG11",
-                      data="CIFAR10",
-                      lr=0.01,
-                      batch_size=64,
-                      path="./datasets",
-                      alpha=100,
-                      local_epoch=3,
-                      global_epoch=5,
-                      device="cuda")
-    trainer.train()
+    main()
