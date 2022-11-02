@@ -1,10 +1,29 @@
+arch:
+  "mp"
+
+server:
+  ip: "localhost"
+  port: 9000
+
 # The number of clients
-n_clients: 10
+n_clients: 3
+
+client1:
+  ip: "localhost"
+  port: 9001
+
+client2:
+  ip: "localhost"
+  port: 9002
+
+client3:
+  ip: "localhost"
+  port: 9003
 
 # optimizer
 optimizer:
   type: "SGD"
-  lr: 0.01
+  lr: 0.1
 
 # model
 model: "SimpleCNN"
@@ -27,5 +46,7 @@ local_epoch: 3
 # global training roud
 global_epoch: 10
 
+algorithm: "FedAVG"
+
 # device
-device: "cuda"
+device: "cpu"

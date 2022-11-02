@@ -35,8 +35,22 @@ class BaseServer:
         self.cnt = 0
         self.clients_socket = []
         self.para_cache = []
+        self.round = 1
+        self.total = 0
+
+    def first_push(self):
+        while self.cnt < self.n_clients:
+            client_socket, address = self.server_socket.accept()
+            self.clients_socket.append(client_socket)
+            self.cnt += 1
+        for client_socket in self.clients_socket:
+            client_socket.sendall(pickle.dumps(self.model.state_dict()))
+            client_socket.close()
+        self.cnt = 0
+        self.clients_socket.clear()
 
     def run(self):
+        self.first_push()
         for _ in range(self.global_epoch):
             self.pull()
             self.aggregate()
@@ -44,28 +58,42 @@ class BaseServer:
             self.clients_socket.clear()
             self.para_cache.clear()
             self.cnt = 0
+            self.round += 1
+            self.total = 0
         self.server_socket.close()
 
     def pull(self):
         while self.cnt < self.n_clients:
             client_socket, address = self.server_socket.accept()
             self.clients_socket.append(client_socket)
-            client_para = client_socket.recv(102400)
-            print(f"SERVER@{self.ip}:{self.port} INFO: accept client@{address[0]}:{address[1]} parameters")
-            client_para = pickle.loads(client_para)
-            self.para_cache.append(client_para)
+
+            client_para = b''
+            tmp = client_socket.recv(1024)
+            while tmp:
+                client_para += tmp
+                if len(tmp) < 1024:
+                    break
+                tmp = client_socket.recv(1024)
+            decode = pickle.loads(client_para)
+
+            self.total += decode[0]
+            self.para_cache.append(decode)
+
             self.cnt += 1
+            print(f"SERVER@{self.ip}:{self.port} INFO: accept client@{address[0]}:{address[1]} parameters")
 
     def aggregate(self):
         clear_parameter(self.model)
         for key in self.model.state_dict():
-            dtype = self.para_cache[0][key].dtype
+            dtype = self.para_cache[0][1][key].dtype
             for idx in range(self.n_clients):
-                self.model.state_dict()[key] += (1 / self.n_clients) * self.para_cache[idx][key].to(dtype)
-                # self.model.state_dict()[key] += (
-                #         (client_nums[idx] / total) * self.clients[idx].model.state_dict()[key]).to(dtype)
+                self.model.state_dict()[key] += \
+                    (self.para_cache[idx][0] / self.total) * self.para_cache[idx][1][key].to(dtype)
         acc1, acc5 = self.validate()
-        print(f"SERVER@{self.ip}:{self.port} INFO: Top-1 Accuracy: {acc1} Top-5 Accuracy: {acc5}")
+        print(f"SERVER@{self.ip}:{self.port} INFO: "
+              f"Global Epoch[{self.round}|{self.global_epoch}]"
+              f"Top-1 Accuracy: {acc1} "
+              f"Top-5 Accuracy: {acc5}")
 
     def push(self):
         for client_socket in self.clients_socket:

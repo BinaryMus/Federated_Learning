@@ -9,6 +9,17 @@ all_optim = {"SGD": torch.optim.SGD}
 all_arch = {"SimpleCNN": SimpleCNN, "VGG11": VGG11, "ResNet18": Resnet18}
 
 
+def client_recv(client_socket):
+    new_para = b''
+    tmp = client_socket.recv(1024)
+    while tmp:
+        new_para += tmp
+        if len(tmp) < 1024:
+            break
+        tmp = client_socket.recv(1024)
+    return pickle.loads(new_para)
+
+
 class BaseClient:
     def __init__(
             self,
@@ -18,6 +29,7 @@ class BaseClient:
             server_port: int,
             model: int,
             data: DataLoader,
+            sample_num: int,
             n_classes: int,
             global_epoch: int,
             local_epoch: int,
@@ -34,6 +46,7 @@ class BaseClient:
         self.server_port = server_port
         self.criterion = criterion  # 损失函数
         self.data = data  # 数据
+        self.sample_num = sample_num
         self.device = torch.device(device)  # 设备
         self.lr = lr  # 学习率
         self.global_epoch = global_epoch
@@ -44,15 +57,27 @@ class BaseClient:
         self.optim_name = optimizer
         self.n_classes = n_classes
 
+    def first_pull(self):
+        client_socket = socket.socket()
+        client_socket.bind((self.ip, self.port))
+        client_socket.connect((self.server_ip, self.server_port))
+
+        self.model.load_state_dict(client_recv(client_socket))
+
+        client_socket.close()
+
     def run(self):
         self.model = all_arch[self.model_name](num_classes=self.n_classes).to(self.device)  # 模型
         self.optimizer = all_optim[self.optim_name](self.model.parameters(), lr=self.lr)
-        for _ in range(self.global_epoch):
+        self.first_pull()
+        for ge in range(self.global_epoch):
             for epoch in range(self.local_epoch):
                 loss_avg = self.train()
                 self.loss.append(loss_avg)
                 print(
-                    f"CLIENT@{self.ip}:{self.port} INFO: Local Epoch[{epoch + 1}|{self.local_epoch}] "
+                    f"CLIENT@{self.ip}:{self.port} INFO: "
+                    f"Global Epoch[{ge + 1}|{self.global_epoch}] "
+                    f"Local Epoch[{epoch + 1}|{self.local_epoch}] "
                     f"Loss:{round(loss_avg, 3)}")
             self.push_pull()
 
@@ -75,10 +100,8 @@ class BaseClient:
         client_socket = socket.socket()
         client_socket.bind((self.ip, self.port))
         client_socket.connect((self.server_ip, self.server_port))
-        client_socket.sendall(pickle.dumps(self.model.state_dict()))
+        client_socket.sendall(pickle.dumps([self.sample_num, self.model.state_dict()]))
 
-        new_para = client_socket.recv(102400)
-        new_para = pickle.loads(new_para)
-        self.model.load_state_dict(new_para)
+        self.model.load_state_dict(client_recv(client_socket))
 
         client_socket.close()

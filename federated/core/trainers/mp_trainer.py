@@ -3,13 +3,13 @@ from .. import BaseClient, BaseServer
 from ...models import *
 from ...datasets import *
 
-all_arch = {"SimpleCNN": SimpleCNN, "VGG11": VGG11, "ResNet18": Resnet18}
+# all_arch = {"SimpleCNN": SimpleCNN, "VGG11": VGG11, "ResNet18": Resnet18}
 all_data = {"MNIST": Mnist, "CIFAR10": Cifar10}
 all_server = {"FedAVG": BaseServer}
 all_client = {"FedAVG": BaseClient}
 
 
-class Trainer:
+class TrainerMP:
     def __init__(
             self,
             cluster_conf: dict,
@@ -62,6 +62,7 @@ class Trainer:
             self.model,
             # all_arch[model](num_classes=len(self.data.train_set.classes), ),
             self.data.trainLoader[i],
+            len(self.data.train_set),
             len(self.data.train_set.classes),
             global_epoch,
             local_epoch,
