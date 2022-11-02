@@ -6,19 +6,47 @@ server:
   port: 9000
 
 # The number of clients
-n_clients: 3
+n_clients: 10
 
 client1:
   ip: "localhost"
-  port: 9001
+  port: 8001
 
 client2:
   ip: "localhost"
-  port: 9002
+  port: 8002
 
 client3:
   ip: "localhost"
-  port: 9003
+  port: 8003
+
+client4:
+  ip: "localhost"
+  port: 8004
+
+client5:
+  ip: "localhost"
+  port: 8005
+
+client6:
+  ip: "localhost"
+  port: 8006
+
+client7:
+  ip: "localhost"
+  port: 8007
+
+client8:
+  ip: "localhost"
+  port: 8008
+
+client9:
+  ip: "localhost"
+  port: 8009
+
+client10:
+  ip: "localhost"
+  port: 8010
 
 # optimizer
 optimizer:
