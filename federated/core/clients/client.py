@@ -1,39 +1,65 @@
+import socket
+
+import pickle
 import torch
 from torch.utils.data import DataLoader
+from federated.models import *
 
 all_optim = {"SGD": torch.optim.SGD}
+all_arch = {"SimpleCNN": SimpleCNN, "VGG11": VGG11, "ResNet18": Resnet18}
 
 
 class BaseClient:
-    def __init__(self,
-                 index: int,
-                 n_clients: int,
-                 model: torch.nn.Module,
-                 data: DataLoader,
-                 epoch: int,
-                 optimizer: str,
-                 lr: float,
-                 device: str,
-                 criterion=torch.nn.CrossEntropyLoss()):
-        self.index = index  # 客户端索引
-        self.n_clients = n_clients  # 总客户端数量
+    def __init__(
+            self,
+            ip: str,
+            port: int,
+            server_ip: str,
+            server_port: int,
+            model: int,
+            data: DataLoader,
+            n_classes: int,
+            global_epoch: int,
+            local_epoch: int,
+            optimizer: str,
+            lr: float,
+            device: str,
+            criterion=torch.nn.CrossEntropyLoss()
+    ):
+        self.model = None
+        self.optimizer = None
+        self.ip = ip
+        self.port = port
+        self.server_ip = server_ip
+        self.server_port = server_port
         self.criterion = criterion  # 损失函数
         self.data = data  # 数据
         self.device = torch.device(device)  # 设备
-        self.model = model.to(device)  # 模型
         self.lr = lr  # 学习率
-        self.epoch = epoch  # 本地多轮迭代次数
+        self.global_epoch = global_epoch
+        self.local_epoch = local_epoch  # 本地多轮迭代次数
         self.loss = []  # 本地训练的损失
-        self.optimizer = all_optim[optimizer](self.model.parameters(), lr=self.lr)
+        # self.optimizer = torch.optim.SGD(self.model.parameters(), lr=0.01)
+        self.model_name = model
+        self.optim_name = optimizer
+        self.n_classes = n_classes
+
+    def run(self):
+        self.model = all_arch[self.model_name](num_classes=self.n_classes).to(self.device)  # 模型
+        self.optimizer = all_optim[self.optim_name](self.model.parameters(), lr=self.lr)
+        for _ in range(self.global_epoch):
+            for epoch in range(self.local_epoch):
+                loss_avg = self.train()
+                self.loss.append(loss_avg)
+                print(
+                    f"CLIENT@{self.ip}:{self.port} INFO: Local Epoch[{epoch + 1}|{self.local_epoch}] "
+                    f"Loss:{round(loss_avg, 3)}")
+            self.push_pull()
 
     def train(self):
-        """
-        一轮的训练
-        :return: 返回该轮的平均loss
-        """
         loss_avg = 0
         cnt = 0
-        for idx, (x, y) in enumerate(self.data):
+        for x, y in self.data:
             cnt += 1
             self.optimizer.zero_grad()
             x = x.to(self.device)
@@ -45,15 +71,14 @@ class BaseClient:
             self.optimizer.step()
         return loss_avg / cnt
 
-    def train_loop(self):
-        """
-        本地多轮迭代
-        :return:
-        """
-        for epoch in range(self.epoch):
-            loss_avg = self.train()
-            self.loss.append(loss_avg)
-            print(f"CLIENT INFO: {str(self)} Local Epoch[{epoch + 1}|{self.epoch}] Loss:{round(loss_avg, 3)}")
+    def push_pull(self):
+        client_socket = socket.socket()
+        client_socket.bind((self.ip, self.port))
+        client_socket.connect((self.server_ip, self.server_port))
+        client_socket.sendall(pickle.dumps(self.model.state_dict()))
 
-    def __str__(self):
-        return f"Client[{self.index + 1}|{self.n_clients}]"
+        new_para = client_socket.recv(102400)
+        new_para = pickle.loads(new_para)
+        self.model.load_state_dict(new_para)
+
+        client_socket.close()

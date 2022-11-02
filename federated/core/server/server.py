@@ -1,59 +1,78 @@
+import socket
+import pickle
+
 import torch
-from typing import List
 from ..utils import clear_parameter
 from torch.utils.data import DataLoader
+from federated.models import *
+
+all_arch = {"SimpleCNN": SimpleCNN, "VGG11": VGG11, "ResNet18": Resnet18}
 
 
 class BaseServer:
-    """
-    FedAvg push和pull 都是传递参数
-    """
-
-    def __init__(self,
-                 epoch: int,
-                 clients: List,
-                 model: torch.nn.Module,
-                 data: DataLoader,
-                 device: str):
-        self.clients = clients  # 所有的客户端
-        self.epoch = epoch  # 全局epoch
-        self.n_clients = len(clients)  # 客户端个数
+    def __init__(
+            self,
+            ip: str,
+            port: int,
+            global_epoch: int,
+            n_clients: int,
+            model: torch.nn.Module,
+            data: DataLoader,
+            n_classes: int,
+            device: str
+    ):
+        self.ip = ip
+        self.port = port
+        self.global_epoch = global_epoch  # 全局epoch
+        self.n_clients = n_clients  # 客户端个数
         self.data = data  # 测试集
         self.device = device
-        self.model = model.to(self.device)  # 全局模型
+        self.model = all_arch[model](num_classes=n_classes).to(self.device)  # 全局模型
+        self.cnt = 0
+        self.server_socket = socket.socket()
+        self.server_socket.bind((self.ip, self.port))
+        self.server_socket.listen(self.n_clients)
+        self.cnt = 0
+        self.clients_socket = []
+        self.para_cache = []
 
-    def pull(self, client_nums, total):
-        """
-        接受clients参数并聚合
-        :return:
-        """
+    def run(self):
+        for _ in range(self.global_epoch):
+            self.pull()
+            self.aggregate()
+            self.push()
+            self.clients_socket.clear()
+            self.para_cache.clear()
+            self.cnt = 0
+        self.server_socket.close()
+
+    def pull(self):
+        while self.cnt < self.n_clients:
+            client_socket, address = self.server_socket.accept()
+            self.clients_socket.append(client_socket)
+            client_para = client_socket.recv(102400)
+            print(f"SERVER@{self.ip}:{self.port} INFO: accept client@{address[0]}:{address[1]} parameters")
+            client_para = pickle.loads(client_para)
+            self.para_cache.append(client_para)
+            self.cnt += 1
+
+    def aggregate(self):
         clear_parameter(self.model)
         for key in self.model.state_dict():
-            dtype = self.clients[0].model.state_dict()[key].dtype
+            dtype = self.para_cache[0][key].dtype
             for idx in range(self.n_clients):
-                self.model.state_dict()[key] += (
-                        (client_nums[idx] / total) * self.clients[idx].model.state_dict()[key]).to(dtype)
+                self.model.state_dict()[key] += (1 / self.n_clients) * self.para_cache[idx][key].to(dtype)
+                # self.model.state_dict()[key] += (
+                #         (client_nums[idx] / total) * self.clients[idx].model.state_dict()[key]).to(dtype)
+        acc1, acc5 = self.validate()
+        print(f"SERVER@{self.ip}:{self.port} INFO: Top-1 Accuracy: {acc1} Top-5 Accuracy: {acc5}")
 
     def push(self):
-        """
-        发布全局模型
-        :return:
-        """
-        for idx in range(self.n_clients):
-            clear_parameter(self.clients[idx].model)
-            for key in self.clients[idx].model.state_dict():
-                self.clients[idx].model.state_dict()[key] += self.model.state_dict()[key]
-
-    def pull_push(self, client_nums, total):
-        self.pull(client_nums, total)
-        self.push()
-        return self.validate()
+        for client_socket in self.clients_socket:
+            client_socket.sendall(pickle.dumps(self.model.state_dict()))
+            client_socket.close()
 
     def validate(self):
-        """
-        全局验证
-        :return:
-        """
         total = 0
         correct1 = 0
         correct2 = 0
