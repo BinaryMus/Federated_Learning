@@ -1,6 +1,11 @@
+import torch
 import yaml
 
-from ...core.trainers import TrainerMP
+from ...core.trainers import *
+from ..server import *
+from ..clients import *
+from ...datasets import *
+from ...models import *
 
 
 class Config:
@@ -39,4 +44,41 @@ class Config:
         trainer.run()
 
     def run_distributed(self):
-        pass
+        if self.config["role"] == "server":
+            data = all_data[self.config["data"]](
+                n_clients=self.config["n_clients"],
+                batch_size=self.config["batch_size"],
+                path=self.config["path"],
+                alpha=self.config["alpha"]
+            )
+            for i in range(self.config["n_clients"]):
+                torch.save(data.trainLoader[i], f"./distributed_data/{self.config['data']}_{i + 1}")
+            parameter_server = all_server[self.config["algorithm"]](
+                ip=self.config["ip"],
+                port=self.config["port"],
+                global_epoch=self.config["global_epoch"],
+                n_clients=self.config["n_clients"],
+                model=self.config["model"],
+                data=data.validationLoader,
+                n_classes=len(data.train_set.classes),
+                device=self.config["device"],
+            )
+            parameter_server.run()
+        else:
+            data = torch.load(f"./distributed_data/{self.config['data']}_{self.config['idx']}")
+            cli = all_client[self.config["algorithm"]](
+                ip=self.config["ip"],
+                port=self.config["port"],
+                server_ip=self.config["server_ip"],
+                server_port=self.config["server_port"],
+                model=self.config["model"],
+                data=data,
+                sample_num=len(data.dataset),
+                n_classes=len(data.dataset.dataset.classes),
+                global_epoch=self.config["global_epoch"],
+                local_epoch=self.config["local_epoch"],
+                optimizer=self.config["optimizer"],
+                lr=self.config["lr"],
+                device=self.config["device"],
+            )
+            cli.run()

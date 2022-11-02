@@ -4,9 +4,9 @@ import pickle
 import torch
 from ..utils import clear_parameter
 from torch.utils.data import DataLoader
-from federated.models import *
-
-all_arch = {"SimpleCNN": SimpleCNN, "VGG11": VGG11, "ResNet18": Resnet18}
+# from federated.models import *
+from ..clients import all_arch
+# all_arch = {"SimpleCNN": SimpleCNN, "VGG11": VGG11, "ResNet18": Resnet18}
 
 
 class BaseServer:
@@ -16,7 +16,7 @@ class BaseServer:
             port: int,
             global_epoch: int,
             n_clients: int,
-            model: torch.nn.Module,
+            model: str,
             data: DataLoader,
             n_classes: int,
             device: str

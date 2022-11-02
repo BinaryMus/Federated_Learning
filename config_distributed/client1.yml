@@ -1,0 +1,33 @@
+role: "client" #
+
+idx: 1 #
+
+ip: "localhost" #
+
+port: 8001 #
+
+server_ip: "localhost" #
+
+server_port: 9000 #
+
+# model
+model: "SimpleCNN" #
+
+# dataset
+data: "MNIST" #
+
+
+optimizer: "SGD" #
+
+lr: 0.1 #
+
+# local training round
+local_epoch: 3 #
+
+# global training round
+global_epoch: 10 #
+
+algorithm: "FedAVG" #
+
+# device
+device: "cpu" #

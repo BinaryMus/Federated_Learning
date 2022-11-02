@@ -5,10 +5,6 @@ from . import Data
 
 
 class Cifar10(Data):
-    """
-    To verify
-    """
-
     def __init__(self,
                  n_clients: int,
                  batch_size: int,

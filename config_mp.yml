@@ -1,6 +1,3 @@
-arch:
-  "mp"
-
 server:
   ip: "localhost"
   port: 9000
@@ -71,7 +68,7 @@ alpha: 100
 # local training round
 local_epoch: 3
 
-# global training roud
+# global training round
 global_epoch: 10
 
 algorithm: "FedAVG"

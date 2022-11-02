@@ -27,7 +27,7 @@ class BaseClient:
             port: int,
             server_ip: str,
             server_port: int,
-            model: int,
+            model: str,
             data: DataLoader,
             sample_num: int,
             n_classes: int,
