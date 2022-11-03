@@ -1,11 +1,7 @@
-import torch
 import yaml
 
-from ...core.trainers import *
-from ..server import *
 from ..clients import *
-from ...datasets import *
-from ...models import *
+from ...core.trainers import *
 
 
 class Config:

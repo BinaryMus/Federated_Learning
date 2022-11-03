@@ -1,8 +1,9 @@
+import pickle
 import socket
 
-import pickle
 import torch
 from torch.utils.data import DataLoader
+
 from federated.models import *
 
 all_optim = {"SGD": torch.optim.SGD}

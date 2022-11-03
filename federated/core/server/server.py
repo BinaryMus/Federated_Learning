@@ -1,11 +1,12 @@
-import socket
 import pickle
+import socket
 
 import torch
-from ..utils import clear_parameter
 from torch.utils.data import DataLoader
+
 # from federated.models import *
 from ..clients import all_arch
+from ..utils import clear_parameter
 
 
 # all_arch = {"SimpleCNN": SimpleCNN, "VGG11": VGG11, "ResNet18": Resnet18}

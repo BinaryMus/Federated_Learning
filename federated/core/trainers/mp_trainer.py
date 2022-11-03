@@ -1,6 +1,6 @@
 import multiprocessing as mp
+
 from .. import BaseClient, BaseServer
-from ...models import *
 from ...datasets import *
 
 # all_arch = {"SimpleCNN": SimpleCNN, "VGG11": VGG11, "ResNet18": Resnet18}
