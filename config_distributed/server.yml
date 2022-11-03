@@ -4,7 +4,7 @@ ip: "localhost" #
 
 port: 9000 #
 
-n_clients: 3 #
+n_clients: 2 #
 
 model: "SimpleCNN" #
 

@@ -13,9 +13,10 @@ def client_recv(client_socket):
     new_para = b''
     tmp = client_socket.recv(1024)
     while tmp:
-        new_para += tmp
-        if len(tmp) < 1024:
+        if tmp.endswith(b'stop!'):
+            new_para += tmp[:-5]
             break
+        new_para += tmp
         tmp = client_socket.recv(1024)
     return pickle.loads(new_para)
 
@@ -56,6 +57,7 @@ class BaseClient:
         self.model_name = model
         self.optim_name = optimizer
         self.n_classes = n_classes
+        print(f"CLIENT@{self.ip}:{self.port} INFO: Start!")
 
     def first_pull(self):
         client_socket = socket.socket()
@@ -101,6 +103,7 @@ class BaseClient:
         client_socket.bind((self.ip, self.port))
         client_socket.connect((self.server_ip, self.server_port))
         client_socket.sendall(pickle.dumps([self.sample_num, self.model.state_dict()]))
+        client_socket.sendall(b'stop!')
 
         self.model.load_state_dict(client_recv(client_socket))
 

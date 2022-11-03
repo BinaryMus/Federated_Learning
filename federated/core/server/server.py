@@ -6,6 +6,8 @@ from ..utils import clear_parameter
 from torch.utils.data import DataLoader
 # from federated.models import *
 from ..clients import all_arch
+
+
 # all_arch = {"SimpleCNN": SimpleCNN, "VGG11": VGG11, "ResNet18": Resnet18}
 
 
@@ -44,6 +46,7 @@ class BaseServer:
             self.cnt += 1
         for client_socket in self.clients_socket:
             client_socket.sendall(pickle.dumps(self.model.state_dict()))
+            client_socket.sendall(b'stop!')
             client_socket.close()
         self.cnt = 0
         self.clients_socket.clear()
@@ -70,9 +73,10 @@ class BaseServer:
             client_para = b''
             tmp = client_socket.recv(1024)
             while tmp:
-                client_para += tmp
-                if len(tmp) < 1024:
+                if tmp.endswith(b'stop!'):
+                    client_para += tmp[:-5]
                     break
+                client_para += tmp
                 tmp = client_socket.recv(1024)
             decode = pickle.loads(client_para)
 
@@ -98,6 +102,7 @@ class BaseServer:
     def push(self):
         for client_socket in self.clients_socket:
             client_socket.sendall(pickle.dumps(self.model.state_dict()))
+            client_socket.sendall(b'stop!')
             client_socket.close()
 
     def validate(self):
