@@ -16,6 +16,7 @@ model: "SimpleCNN" #
 # dataset
 data: "MNIST" #
 
+batch_size: 64
 
 optimizer: "SGD" #
 

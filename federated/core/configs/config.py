@@ -52,7 +52,7 @@ class Config:
                 alpha=self.config["alpha"]
             )
             for i in range(self.config["n_clients"]):
-                torch.save(data.trainLoader[i], f"./distributed_data/{self.config['data']}_{i + 1}")
+                torch.save(data.trainLoader[i].dataset, f"./distributed_data/{self.config['data']}_{i + 1}")
             parameter_server = all_server[self.config["algorithm"]](
                 ip=self.config["ip"],
                 port=self.config["port"],
@@ -65,16 +65,22 @@ class Config:
             )
             parameter_server.run()
         else:
+            from torch.utils.data import DataLoader
             data = torch.load(f"./distributed_data/{self.config['data']}_{self.config['idx']}")
+            loader = DataLoader(
+                dataset=data,
+                batch_size=self.config["batch_size"],
+                shuffle=True,
+            )
             cli = all_client[self.config["algorithm"]](
                 ip=self.config["ip"],
                 port=self.config["port"],
                 server_ip=self.config["server_ip"],
                 server_port=self.config["server_port"],
                 model=self.config["model"],
-                data=data,
-                sample_num=len(data.dataset),
-                n_classes=len(data.dataset.dataset.classes),
+                data=loader,
+                sample_num=len(data),
+                n_classes=len(data.dataset.classes),
                 global_epoch=self.config["global_epoch"],
                 local_epoch=self.config["local_epoch"],
                 optimizer=self.config["optimizer"],
