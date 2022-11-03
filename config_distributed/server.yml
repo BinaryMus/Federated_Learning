@@ -1,6 +1,6 @@
 role: "server" #
 
-ip: "localhost" #
+ip: "172.27.99.48" #
 
 port: 9000 #
 

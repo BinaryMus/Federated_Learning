@@ -2,11 +2,11 @@ role: "client"
 
 idx: 2
 
-ip: "localhost"
+ip: "172.27.103.200"
 
 port: 8002
 
-server_ip: "localhost"
+server_ip: "172.27.99.48"
 
 server_port: 9000
 
