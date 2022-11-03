@@ -9,7 +9,7 @@ class Data:
         self.validate_set = None
         self.plot_path = plot_path
 
-    def train_loader(self, alpha, n_clients, batch_size, flag=True):
+    def train_loader(self, alpha, n_clients, batch_size, flag=False):
         labels = np.array(self.train_set.targets)
         split_idx = self.split_non_iid(labels, alpha=alpha, n_clients=n_clients)
         if flag:

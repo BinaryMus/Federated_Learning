@@ -32,7 +32,6 @@ class BaseServer:
         self.server_socket = socket.socket()
         self.server_socket.bind((self.ip, self.port))
         self.server_socket.listen(self.n_clients)
-        self.cnt = 0
         self.clients_socket = []
         self.para_cache = []
         self.round = 1
@@ -50,6 +49,7 @@ class BaseServer:
         self.clients_socket.clear()
 
     def run(self):
+        print(f"SERVER@{self.ip}:{self.port} INFO: Start!")
         self.first_push()
         for _ in range(self.global_epoch):
             self.pull()
