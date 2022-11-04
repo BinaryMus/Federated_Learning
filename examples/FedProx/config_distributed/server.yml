@@ -1,0 +1,23 @@
+role: "server" #
+
+ip: "172.27.99.48" #
+
+port: 9000 #
+
+n_clients: 3 #
+
+model: "SimpleCNN" #
+
+data: "MNIST" #
+
+batch_size: 64 #
+
+path: "./datasets" #
+
+alpha: 100 #
+
+global_epoch: 10 #
+
+algorithm: "FedProx" #
+
+device: "cpu" #

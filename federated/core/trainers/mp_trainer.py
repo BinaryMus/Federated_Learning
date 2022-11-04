@@ -1,15 +1,6 @@
 import multiprocessing as mp
 
 
-# from ..clients import *
-# from ..server import *
-# from ...datasets import *
-
-# all_data = {"MNIST": Mnist, "CIFAR10": Cifar10}
-# all_server = {"FedAVG": BaseServer}
-# all_client = {"FedAVG": BaseClient}
-
-
 class TrainerMP:
     def __init__(
             self,

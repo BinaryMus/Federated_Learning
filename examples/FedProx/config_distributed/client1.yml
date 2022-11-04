@@ -1,0 +1,34 @@
+role: "client" #
+
+idx: 1 #
+
+ip: "172.27.0.201" #
+
+port: 8001 #
+
+server_ip: "172.27.99.48" #
+
+server_port: 9000 #
+
+# model
+model: "SimpleCNN" #
+
+# dataset
+data: "MNIST" #
+
+batch_size: 64
+
+optimizer: "SGD" #
+
+lr: 0.1 #
+
+# local training round
+local_epoch: 3 #
+
+# global training round
+global_epoch: 10 #
+
+algorithm: "FedProx" #
+
+# device
+device: "cpu" #

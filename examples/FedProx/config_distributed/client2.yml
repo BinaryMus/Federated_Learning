@@ -1,0 +1,41 @@
+role: "client"
+
+idx: 2
+
+ip: "172.27.103.200"
+
+port: 8002
+
+server_ip: "172.27.99.48"
+
+server_port: 9000
+
+# model
+model: "SimpleCNN"
+
+# dataset
+data: "MNIST"
+
+# mini-batch size
+batch_size: 64
+
+optimizer: "SGD"
+
+lr: 0.1
+
+# the path of dataset
+path: "./datasets"
+
+# the parameter to control NON-IID
+alpha: 100
+
+# local training round
+local_epoch: 3
+
+# global training round
+global_epoch: 10
+
+algorithm: "FedProx"
+
+# device
+device: "cpu"
