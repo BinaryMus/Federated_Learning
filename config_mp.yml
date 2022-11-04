@@ -63,7 +63,7 @@ batch_size: 64
 path: "./datasets"
 
 # the parameter to control NON-IID
-alpha: 100
+alpha: 1
 
 # local training round
 local_epoch: 3

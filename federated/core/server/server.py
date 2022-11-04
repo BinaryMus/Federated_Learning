@@ -9,9 +9,6 @@ from torch.utils.data import DataLoader
 from ..utils import clear_parameter
 
 
-# all_arch = {"SimpleCNN": SimpleCNN, "VGG11": VGG11, "ResNet18": Resnet18}
-
-
 class BaseServer:
     def __init__(
             self,

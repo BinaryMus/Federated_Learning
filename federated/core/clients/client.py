@@ -1,14 +1,9 @@
 import pickle
 import socket
+import time
 
 import torch
 from torch.utils.data import DataLoader
-
-
-# from federated.models import *
-
-# all_optim = {"SGD": torch.optim.SGD}
-# all_arch = {"SimpleCNN": SimpleCNN, "VGG11": VGG11, "ResNet18": Resnet18}
 
 
 def client_recv(client_socket):
@@ -21,6 +16,16 @@ def client_recv(client_socket):
         new_para += tmp
         tmp = client_socket.recv(1024)
     return pickle.loads(new_para)
+
+
+def client_connect(client_socket, server_ip, server_port, ip, port):
+    while True:
+        try:
+            client_socket.connect((server_ip, server_port))
+            break
+        except Exception as e:
+            print(f"CLIENT@{ip}:{port} ERROR: {e}, reconnecting!")
+            time.sleep(1)
 
 
 class BaseClient:
@@ -64,8 +69,7 @@ class BaseClient:
     def first_pull(self):
         client_socket = socket.socket()
         client_socket.bind((self.ip, self.port))
-        client_socket.connect((self.server_ip, self.server_port))
-
+        client_connect(client_socket, self.server_ip, self.server_port, self.ip, self.port)
         self.model.load_state_dict(client_recv(client_socket))
 
         client_socket.close()
@@ -104,7 +108,7 @@ class BaseClient:
     def push_pull(self):
         client_socket = socket.socket()
         client_socket.bind((self.ip, self.port))
-        client_socket.connect((self.server_ip, self.server_port))
+        client_connect(client_socket, self.server_ip, self.server_port, self.ip, self.port)
         client_socket.sendall(pickle.dumps([self.sample_num, self.model.state_dict()]))
         client_socket.sendall(b'stop!')
 
