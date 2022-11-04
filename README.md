@@ -205,7 +205,7 @@ Data类说明：构造函数传入的参数为绘图路径（该路径用于绘�
 
 若需要修改client端，需要继承自./federated/core/clients/client.py下的BaseClient。
 
-BaseClient类说明：成员变量model为模型，optimizer为优化器，ip为自身的IP地址，port为自身和服务器通信使用的端口（这里我使用了固定的端口），server_ip和server_port为服务器ip和端口，criterion为损失函数，data为数据（torch.utils.data.DataLoader），sample_num为样本数量（用于聚合），device为自身使用的设备，lr为学习率，global_epoch为全局迭代次数，local_epoch为本地迭代次数，loss记录了损失的变化清空，model_name为模型名称，optim_name为优化器名称，n_classes为分类的数量。\
+BaseClient类说明：成员变量model为模型，optimizer为优化器，ip为自身的IP地址，port为自身和服务器通信使用的端口（这里我使用了固定的端口），server_ip和server_port为服务器ip和端口，criterion为损失函数，data为数据（torch.utils.data.DataLoader），sample_num为样本数量（用于聚合），device为自身使用的设备，lr为学习率，global_epoch为全局迭代次数，local_epoch为本地迭代次数，loss记录了损失的变化情况，model_name为模型名称，optim_name为优化器名称，n_classes为分类的数量。\
 成员函数first_pull使用socket拉取第一次服务器的的参数，train函数训练模型一轮，push_pull上传自身参数以及下载服务器集合后的参数。client的行为都被封装在了run函数中，实例化client后调用run函数即可。\
 修改client的损失函数：实例化client时传入自定义的criterion（默认是交叉熵，这里不好写入yaml文件中，需要自定义）\
 对client上传数据进行压缩：重写push_pull函数对sendall的数据进行压缩（量化、稀疏化、低秩、编码等等。后续会进行一些功能的添加），server端接受也需要写解码的接口。
@@ -217,4 +217,4 @@ BaseServer类说明：成员变量ip为自身ip地址，port为自身通信的�
 修改server的聚合策略：新的server类只需重写aggregate函数，聚合后继续训练也可以在aggregate函数后添加训练的代码。\
 对server发布数据进行压缩：在push函数中sendall前添加压缩操作，对于client端也需要写解码的接口。
 
-在重写完client和server后需要./federated/core/register.py中的all_server和all_client注册新的客户端和服务器。
+重写完client和server后需要./federated/core/register.py中的all_server和all_client注册新的客户端和服务器。
