@@ -4,10 +4,11 @@ import socket
 import torch
 from torch.utils.data import DataLoader
 
-from federated.models import *
 
-all_optim = {"SGD": torch.optim.SGD}
-all_arch = {"SimpleCNN": SimpleCNN, "VGG11": VGG11, "ResNet18": Resnet18}
+# from federated.models import *
+
+# all_optim = {"SGD": torch.optim.SGD}
+# all_arch = {"SimpleCNN": SimpleCNN, "VGG11": VGG11, "ResNet18": Resnet18}
 
 
 def client_recv(client_socket):
@@ -70,6 +71,7 @@ class BaseClient:
         client_socket.close()
 
     def run(self):
+        from ..register import all_arch, all_optim
         self.model = all_arch[self.model_name](num_classes=self.n_classes).to(self.device)  # 模型
         self.optimizer = all_optim[self.optim_name](self.model.parameters(), lr=self.lr)
         self.first_pull()

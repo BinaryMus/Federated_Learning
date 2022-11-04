@@ -1,12 +1,13 @@
 import multiprocessing as mp
 
-from ..clients import *
-from ..server import *
-from ...datasets import *
 
-all_data = {"MNIST": Mnist, "CIFAR10": Cifar10}
-all_server = {"FedAVG": BaseServer}
-all_client = {"FedAVG": BaseClient}
+# from ..clients import *
+# from ..server import *
+# from ...datasets import *
+
+# all_data = {"MNIST": Mnist, "CIFAR10": Cifar10}
+# all_server = {"FedAVG": BaseServer}
+# all_client = {"FedAVG": BaseClient}
 
 
 class TrainerMP:
@@ -46,7 +47,7 @@ class TrainerMP:
         self.algorithm = algorithm  # 算法
         self.acc1_lst = []
         self.acc5_lst = []
-
+        from ..register import all_data, all_client, all_server
         self.data = all_data[data](
             self.n_clients,
             self.batch_size,

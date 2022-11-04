@@ -1,6 +1,6 @@
 import yaml
 
-from ..clients import *
+from ..server import *
 from ...core.trainers import *
 
 

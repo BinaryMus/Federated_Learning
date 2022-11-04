@@ -5,7 +5,7 @@ import torch
 from torch.utils.data import DataLoader
 
 # from federated.models import *
-from ..clients import all_arch
+# from ..clients import all_arch
 from ..utils import clear_parameter
 
 
@@ -30,6 +30,7 @@ class BaseServer:
         self.n_clients = n_clients  # 客户端个数
         self.data = data  # 测试集
         self.device = device
+        from ..register import all_arch
         self.model = all_arch[model](num_classes=n_classes).to(self.device)  # 全局模型
         self.cnt = 0
         self.server_socket = socket.socket()
