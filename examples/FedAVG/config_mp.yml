@@ -69,7 +69,7 @@ alpha: 0.05
 local_epoch: 3
 
 # global training round
-global_epoch: 5
+global_epoch: 10
 
 algorithm: "FedAVG"
 

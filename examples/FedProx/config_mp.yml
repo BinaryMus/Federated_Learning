@@ -69,7 +69,7 @@ alpha: 0.05
 local_epoch: 3
 
 # global training round
-global_epoch: 5
+global_epoch: 10
 
 algorithm: "FedProx" # 参数MU不太好加，在./federated/core/clients/fedprox_client的默认参数中改MU的值
 
