@@ -1,3 +1,3 @@
-from .cifar10 import *
-from .dataset import Data
+from .dataset import *
 from .mnist import *
+from .cifar10 import *
