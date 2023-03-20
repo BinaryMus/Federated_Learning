@@ -1,0 +1,78 @@
+server:
+  ip: "localhost"
+  port: 9000
+
+# The number of clients
+n_clients: 5
+
+client1:
+  ip: "localhost"
+  port: 8001
+
+client2:
+  ip: "localhost"
+  port: 8002
+
+client3:
+  ip: "localhost"
+  port: 8003
+
+client4:
+  ip: "localhost"
+  port: 8004
+
+client5:
+  ip: "localhost"
+  port: 8005
+
+client6:
+  ip: "localhost"
+  port: 8006
+
+client7:
+  ip: "localhost"
+  port: 8007
+
+client8:
+  ip: "localhost"
+  port: 8008
+
+client9:
+  ip: "localhost"
+  port: 8009
+
+client10:
+  ip: "localhost"
+  port: 8010
+
+# optimizer
+optimizer:
+  type: "SGD"
+  lr: 0.1
+
+# model
+model: "SimpleCNN"
+
+# dataset
+data: "MNIST"
+
+# mini-batch size
+batch_size: 64
+
+# the path of dataset
+path: "./datasets"
+
+# the parameter to control NON-IID
+alpha: 1
+
+# local training round
+local_epoch: 2
+
+# global training round
+global_epoch: 5
+
+# FedAVG,Krum,Multi_Krum
+algorithm: "Multi_Krum"
+
+# device
+device: "cpu"

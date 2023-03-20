@@ -1,1 +1,1 @@
-python main.py --config="config.yml" --seed=42
+python main.py --config="config_mp.yml" --seed=42

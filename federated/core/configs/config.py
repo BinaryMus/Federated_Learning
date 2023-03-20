@@ -24,5 +24,6 @@ class Config:
                           alpha=self.config["alpha"],
                           local_epoch=self.config["local_epoch"],
                           global_epoch=self.config["global_epoch"],
+                          algorithm=self.config["algorithm"],
                           device=self.config["device"])
         trainer.train()

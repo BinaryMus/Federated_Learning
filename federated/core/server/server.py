@@ -44,8 +44,8 @@ class BaseServer:
             for key in self.clients[idx].model.state_dict():
                 self.clients[idx].model.state_dict()[key] += self.model.state_dict()[key]
 
-    def pull_push(self, client_nums, total):
-        self.pull(client_nums, total)
+    def pull_push(self, *args):
+        self.pull(args[0], args[1])
         self.push()
         return self.validate()
 
