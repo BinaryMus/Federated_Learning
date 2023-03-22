@@ -63,7 +63,7 @@ batch_size: 64
 path: "./datasets"
 
 # the parameter to control NON-IID
-alpha: 1
+alpha: 0.3
 
 # local training round
 local_epoch: 2
@@ -71,7 +71,7 @@ local_epoch: 2
 # global training round
 global_epoch: 10
 
-# FedAVG,Krum,Multi_Krum,Median,Trimmed_Mean,FLTrust
+# FedAVG,Krum,Multi_Krum,Median,Trimmed_Mean,FLTrust,My
 algorithm: "FLTrust"
 
 # device

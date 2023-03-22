@@ -3,14 +3,15 @@ from ..server.Multi_Krum_agg import Multi_Krum
 from ..server.Median_agg import Median
 from ..server.Trimmed_Mean_agg import Trimmed_Mean
 from ..server.FLTrust_agg import FLTrust
+from ..server.My_agg import My
 from .. import BaseClient, BaseServer
 from ...models import *
 from ...datasets import *
 
 all_arch = {"SimpleCNN": SimpleCNN, "VGG11": VGG11, "ResNet18": Resnet18}
 all_data = {"MNIST": Mnist, "CIFAR10": Cifar10}
-all_server = {"FedAVG": BaseServer, "Krum": Krum, "Multi_Krum": Multi_Krum, "Median": Median, "Trimmed_Mean": Trimmed_Mean, "FLTrust": FLTrust}
-all_client = {"FedAVG": BaseClient, "Krum": BaseClient, "Multi_Krum": BaseClient, "Median": BaseClient, "Trimmed_Mean": BaseClient, "FLTrust": BaseClient}
+all_server = {"FedAVG": BaseServer, "Krum": Krum, "Multi_Krum": Multi_Krum, "Median": Median, "Trimmed_Mean": Trimmed_Mean, "FLTrust": FLTrust, "My": My}
+all_client = {"FedAVG": BaseClient, "Krum": BaseClient, "Multi_Krum": BaseClient, "Median": BaseClient, "Trimmed_Mean": BaseClient, "FLTrust": BaseClient, "My": BaseClient}
 
 
 class Trainer:
