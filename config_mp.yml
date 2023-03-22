@@ -69,10 +69,10 @@ alpha: 1
 local_epoch: 2
 
 # global training round
-global_epoch: 5
+global_epoch: 10
 
-# FedAVG,Krum,Multi_Krum
-algorithm: "Multi_Krum"
+# FedAVG,Krum,Multi_Krum,Median,Trimmed_Mean,FLTrust
+algorithm: "FLTrust"
 
 # device
 device: "cpu"
