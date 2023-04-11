@@ -40,6 +40,7 @@ class Config:
         trainer.run()
 
     def run_distributed(self):
+        from ...core.register import all_data, all_server, all_client
         if self.config["role"] == "server":
             data = all_data[self.config["data"]](
                 n_clients=self.config["n_clients"],

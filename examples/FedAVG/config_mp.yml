@@ -3,7 +3,7 @@ server:
   port: 9000
 
 # The number of clients
-n_clients: 10
+n_clients: 3
 
 client1:
   ip: "localhost"
@@ -66,10 +66,10 @@ path: "./datasets"
 alpha: 0.05
 
 # local training round
-local_epoch: 3
+local_epoch: 1
 
 # global training round
-global_epoch: 10
+global_epoch: 20
 
 algorithm: "FedAVG"
 

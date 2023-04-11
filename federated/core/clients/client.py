@@ -114,4 +114,4 @@ class BaseClient:
                 break
             except Exception as e:
                 print(f"CLIENT@{ip}:{port} ERROR: {e}, reconnecting!")
-                time.sleep(1)
+                time.sleep(10)
