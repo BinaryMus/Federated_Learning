@@ -66,10 +66,10 @@ path: "./datasets"
 alpha: 0.05
 
 # local training round
-local_epoch: 1
+local_epoch: 3
 
 # global training round
-global_epoch: 20
+global_epoch: 10
 
 algorithm: "FedAVG"
 
