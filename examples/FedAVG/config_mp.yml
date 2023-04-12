@@ -3,7 +3,7 @@ server:
   port: 9000
 
 # The number of clients
-n_clients: 3
+n_clients: 10
 
 client1:
   ip: "localhost"

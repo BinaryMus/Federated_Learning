@@ -1,5 +1,6 @@
 import pickle
 import socket
+import struct
 
 import torch
 from torch.utils.data import DataLoader
@@ -62,6 +63,7 @@ class BaseServer:
             self.cnt = 0
             self.round += 1
             self.total = 0
+        # self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_LINGER, struct.pack('ii', 1, 0))
         self.server_socket.close()
 
     def pull(self):

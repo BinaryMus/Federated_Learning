@@ -1,5 +1,6 @@
 import socket
 import pickle
+import struct
 
 import torch
 from torch.utils.data import DataLoader
@@ -65,21 +66,23 @@ class FedProxClient(BaseClient):
     def push_pull(self):
         client_socket = socket.socket()
         client_socket.bind((self.ip, self.port))
-        self.client_connect(client_socket, self.server_ip, self.server_port, self.ip, self.port)
+        client_socket.connect((self.server_ip, self.server_port))
         client_socket.sendall(pickle.dumps([self.sample_num, self.model.state_dict()]))
         client_socket.sendall(b'stop!')
 
         self.model.load_state_dict(self.client_recv(client_socket))
         self.model_parameter = self.model.parameters()
 
+        client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_LINGER, struct.pack('ii', 1, 0))
         client_socket.close()
 
     def first_pull(self):
         client_socket = socket.socket()
         client_socket.bind((self.ip, self.port))
-        self.client_connect(client_socket, self.server_ip, self.server_port, self.ip, self.port)
+        client_socket.connect((self.server_ip, self.server_port))
 
         self.model.load_state_dict(self.client_recv(client_socket))
         self.model_parameter = self.model.parameters()
 
+        client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_LINGER, struct.pack('ii', 1, 0))
         client_socket.close()

@@ -1,6 +1,7 @@
 import pickle
 import socket
 import time
+import struct
 
 import torch
 from torch.utils.data import DataLoader
@@ -47,9 +48,9 @@ class BaseClient:
     def first_pull(self):
         client_socket = socket.socket()
         client_socket.bind((self.ip, self.port))
-        self.client_connect(client_socket, self.server_ip, self.server_port, self.ip, self.port)
+        client_socket.connect((self.server_ip, self.server_port))
         self.model.load_state_dict(self.client_recv(client_socket))
-
+        client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_LINGER, struct.pack('ii', 1, 0))
         client_socket.close()
 
     def run(self):
@@ -86,12 +87,12 @@ class BaseClient:
     def push_pull(self):
         client_socket = socket.socket()
         client_socket.bind((self.ip, self.port))
-        self.client_connect(client_socket, self.server_ip, self.server_port, self.ip, self.port)
+        client_socket.connect((self.server_ip, self.server_port))
         client_socket.sendall(pickle.dumps([self.sample_num, self.model.state_dict()]))
         client_socket.sendall(b'stop!')
 
         self.model.load_state_dict(self.client_recv(client_socket))
-
+        client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_LINGER, struct.pack('ii', 1, 0))
         client_socket.close()
 
     @staticmethod
@@ -106,12 +107,17 @@ class BaseClient:
             tmp = client_socket.recv(1024)
         return pickle.loads(new_para)
 
-    @staticmethod
-    def client_connect(client_socket, server_ip, server_port, ip, port):
-        while True:
-            try:
-                client_socket.connect((server_ip, server_port))
-                break
-            except Exception as e:
-                print(f"CLIENT@{ip}:{port} ERROR: {e}, reconnecting!")
-                time.sleep(10)
+    # @staticmethod
+    # def client_connect(client_socket, server_ip, server_port, ip, port):
+    #     f = True
+    #     while True:
+    #         try:
+    #             client_socket.connect((server_ip, server_port))
+    #             break
+    #         except Exception as e:
+    #             if f:
+    #                 print(f"CLIENT@{ip}:{port} ERROR: {e}, reconnecting...")
+    #                 f = False
+    #             time.sleep(3)
+
+
