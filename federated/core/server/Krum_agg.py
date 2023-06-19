@@ -6,7 +6,7 @@ from . import server
 
 
 class Krum(server.BaseServer):
-    def __init__(self, epoch: int, clients: List, model: torch.nn.Module, data: DataLoader, device: str, f: int = 0):
+    def __init__(self, epoch: int, clients: List, model: torch.nn.Module, data: DataLoader, device: str, f: int = 8):
         super().__init__(epoch, clients, model, data, device)
         self.scores = [[0, 0.0] for _ in range(self.n_clients)]
         self.tmp_scores = [[] for _ in range(self.n_clients)]
@@ -49,10 +49,10 @@ class Krum(server.BaseServer):
         for i in range(self.n_clients):
             sorted(self.tmp_scores[i])
             self.scores[i][1] = sum(self.tmp_scores[i][:self.n_clients-self.f-2])
-        sorted(self.scores,key = lambda x:x[1])
+        self.scores.sort(key = lambda x:x[1])
 
     def pull(self, client_nums, total):
-        clear_parameter(self.model)
+        # clear_parameter(self.model)
         self.get_score_min()
         # for key in self.model.state_dict():
         #     dtype = self.clients[0].model.state_dict()[key].dtype

@@ -1,0 +1,360 @@
+client11:
+  ip: "localhost"
+  port: 8011
+
+client12:
+  ip: "localhost"
+  port: 8012
+
+client13:
+  ip: "localhost"
+  port: 8013
+
+client14:
+  ip: "localhost"
+  port: 8014
+
+client15:
+  ip: "localhost"
+  port: 8015
+
+client16:
+  ip: "localhost"
+  port: 8016
+
+client17:
+  ip: "localhost"
+  port: 8017
+
+client18:
+  ip: "localhost"
+  port: 8018
+
+client19:
+  ip: "localhost"
+  port: 8019
+
+client20:
+  ip: "localhost"
+  port: 8020
+
+client21:
+  ip: "localhost"
+  port: 8021
+
+client22:
+  ip: "localhost"
+  port: 8022
+
+client23:
+  ip: "localhost"
+  port: 8023
+
+client24:
+  ip: "localhost"
+  port: 8024
+
+client25:
+  ip: "localhost"
+  port: 8025
+
+client26:
+  ip: "localhost"
+  port: 8026
+
+client27:
+  ip: "localhost"
+  port: 8027
+
+client28:
+  ip: "localhost"
+  port: 8028
+
+client29:
+  ip: "localhost"
+  port: 8029
+
+client30:
+  ip: "localhost"
+  port: 8030
+
+client31:
+  ip: "localhost"
+  port: 8031
+
+client32:
+  ip: "localhost"
+  port: 8032
+
+client33:
+  ip: "localhost"
+  port: 8033
+
+client34:
+  ip: "localhost"
+  port: 8034
+
+client35:
+  ip: "localhost"
+  port: 8035
+
+client36:
+  ip: "localhost"
+  port: 8036
+
+client37:
+  ip: "localhost"
+  port: 8037
+
+client38:
+  ip: "localhost"
+  port: 8038
+
+client39:
+  ip: "localhost"
+  port: 8039
+
+client40:
+  ip: "localhost"
+  port: 8040
+
+client41:
+  ip: "localhost"
+  port: 8041
+
+client42:
+  ip: "localhost"
+  port: 8042
+
+client43:
+  ip: "localhost"
+  port: 8043
+
+client44:
+  ip: "localhost"
+  port: 8044
+
+client45:
+  ip: "localhost"
+  port: 8045
+
+client46:
+  ip: "localhost"
+  port: 8046
+
+client47:
+  ip: "localhost"
+  port: 8047
+
+client48:
+  ip: "localhost"
+  port: 8048
+
+client49:
+  ip: "localhost"
+  port: 8049
+
+client50:
+  ip: "localhost"
+  port: 8050
+
+client51:
+  ip: "localhost"
+  port: 8051
+
+client52:
+  ip: "localhost"
+  port: 8052
+
+client53:
+  ip: "localhost"
+  port: 8053
+
+client54:
+  ip: "localhost"
+  port: 8054
+
+client55:
+  ip: "localhost"
+  port: 8055
+
+client56:
+  ip: "localhost"
+  port: 8056
+
+client57:
+  ip: "localhost"
+  port: 8057
+
+client58:
+  ip: "localhost"
+  port: 8058
+
+client59:
+  ip: "localhost"
+  port: 8059
+
+client60:
+  ip: "localhost"
+  port: 8060
+
+client61:
+  ip: "localhost"
+  port: 8061
+
+client62:
+  ip: "localhost"
+  port: 8062
+
+client63:
+  ip: "localhost"
+  port: 8063
+
+client64:
+  ip: "localhost"
+  port: 8064
+
+client65:
+  ip: "localhost"
+  port: 8065
+
+client66:
+  ip: "localhost"
+  port: 8066
+
+client67:
+  ip: "localhost"
+  port: 8067
+
+client68:
+  ip: "localhost"
+  port: 8068
+
+client69:
+  ip: "localhost"
+  port: 8069
+
+client70:
+  ip: "localhost"
+  port: 8070
+
+client71:
+  ip: "localhost"
+  port: 8071
+
+client72:
+  ip: "localhost"
+  port: 8072
+
+client73:
+  ip: "localhost"
+  port: 8073
+
+client74:
+  ip: "localhost"
+  port: 8074
+
+client75:
+  ip: "localhost"
+  port: 8075
+
+client76:
+  ip: "localhost"
+  port: 8076
+
+client77:
+  ip: "localhost"
+  port: 8077
+
+client78:
+  ip: "localhost"
+  port: 8078
+
+client79:
+  ip: "localhost"
+  port: 8079
+
+client80:
+  ip: "localhost"
+  port: 8080
+
+client81:
+  ip: "localhost"
+  port: 8081
+
+client82:
+  ip: "localhost"
+  port: 8082
+
+client83:
+  ip: "localhost"
+  port: 8083
+
+client84:
+  ip: "localhost"
+  port: 8084
+
+client85:
+  ip: "localhost"
+  port: 8085
+
+client86:
+  ip: "localhost"
+  port: 8086
+
+client87:
+  ip: "localhost"
+  port: 8087
+
+client88:
+  ip: "localhost"
+  port: 8088
+
+client89:
+  ip: "localhost"
+  port: 8089
+
+client90:
+  ip: "localhost"
+  port: 8090
+
+client91:
+  ip: "localhost"
+  port: 8091
+
+client92:
+  ip: "localhost"
+  port: 8092
+
+client93:
+  ip: "localhost"
+  port: 8093
+
+client94:
+  ip: "localhost"
+  port: 8094
+
+client95:
+  ip: "localhost"
+  port: 8095
+
+client96:
+  ip: "localhost"
+  port: 8096
+
+client97:
+  ip: "localhost"
+  port: 8097
+
+client98:
+  ip: "localhost"
+  port: 8098
+
+client99:
+  ip: "localhost"
+  port: 8099
+
+client100:
+  ip: "localhost"
+  port: 8100
+

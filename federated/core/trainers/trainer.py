@@ -4,14 +4,21 @@ from ..server.Median_agg import Median
 from ..server.Trimmed_Mean_agg import Trimmed_Mean
 from ..server.FLTrust_agg import FLTrust
 from ..server.My_agg import My
+from ..server.CC_agg import CC
+from ..server.NBH_agg import NBH
+from ..server.CBH_agg import CBH
+from ..server.MyM_agg import MyM
+from ..server.MyA_agg import MyA
+from ..server.MyS_agg import MyS
 from .. import BaseClient, BaseServer
 from ...models import *
 from ...datasets import *
+from ..utils import clear_parameter
 
 all_arch = {"SimpleCNN": SimpleCNN, "VGG11": VGG11, "ResNet18": Resnet18}
 all_data = {"MNIST": Mnist, "CIFAR10": Cifar10}
-all_server = {"FedAVG": BaseServer, "Krum": Krum, "Multi_Krum": Multi_Krum, "Median": Median, "Trimmed_Mean": Trimmed_Mean, "FLTrust": FLTrust, "My": My}
-all_client = {"FedAVG": BaseClient, "Krum": BaseClient, "Multi_Krum": BaseClient, "Median": BaseClient, "Trimmed_Mean": BaseClient, "FLTrust": BaseClient, "My": BaseClient}
+all_server = {"FedAVG": BaseServer, "Krum": Krum, "Multi_Krum": Multi_Krum, "Median": Median, "Trimmed_Mean": Trimmed_Mean, "FLTrust": FLTrust, "My": My, "CC": CC, "LFH": CC, "CBH": CBH, "NBH": NBH, "NB": NBH, "MyM":MyM, "MyA": MyA, "MyS": MyS}
+all_client = {"FedAVG": BaseClient, "Krum": BaseClient, "Multi_Krum": BaseClient, "Median": BaseClient, "Trimmed_Mean": BaseClient, "FLTrust": BaseClient, "My": BaseClient, "CC": BaseClient, "LFH": BaseClient, "CBH": BaseClient, "NBH": BaseClient, "NB": BaseClient, "MyM":BaseClient, "MyA": BaseClient, "MyS": BaseClient}
 
 
 class Trainer:
@@ -49,6 +56,12 @@ class Trainer:
                                    self.path,
                                    self.alpha,
                                    )
+        
+        self.momentum = [all_arch[model](num_classes=len(self.data.train_set.classes), ) for _ in range(n_clients)]
+        for i in range(n_clients):
+            clear_parameter(self.momentum[i])
+        self.His_beta = 1 - 0.9
+
         self.clients = [all_client[algorithm]
                         (i,
                          self.n_clients,
@@ -74,14 +87,32 @@ class Trainer:
 
     def train(self):
         print("TRAINER INFO: Start Training!")
+        folders = "experiment/20c_reverse/0.4/20c_iid_0.4reverse_500epoch_lr=0.01/"
+        # folders = "experiment/20c_nonbyz/20c_iid_500epoch_lr=0.01/"
+        attack_info = ""
+        f =  open(folders + (str)(self.algorithm) + "_" + (str)(self.global_epoch) + attack_info + ".txt","w")
         self.server.push()
         for epoch in range(self.global_epoch):
             for idx in range(self.n_clients):
                 self.clients[idx].train_loop()
 
+            if(self.algorithm == "LFH" or self.algorithm == "CBH" or self.algorithm == "NBH"):
+                for i in range(self.n_clients):
+                    for key in self.clients[0].model.state_dict():
+                        self.momentum[i].state_dict()[key] += self.His_beta * (self.clients[i].model.state_dict()[key] - self.server.model.state_dict()[key] - self.momentum[i].state_dict()[key])
+                        # self.clients[i].model.state_dict()[key] -=  self.His_beta * (self.clients[i].model.state_dict()[key] - self.server.model.state_dict()[key])
+                        self.clients[i].model.state_dict()[key] += self.momentum[i].state_dict()[key] - self.clients[i].model.state_dict()[key] + self.server.model.state_dict()[key]
+
+            for i in range(self.n_clients):
+                for key in self.clients[0].model.state_dict():
+                    self.clients[i].model.state_dict()[key] -= self.server.model.state_dict()[key]
+
+            self.server.attack(1,0.4)
+
             acc1, acc5 = self.server.pull_push(self.data.client_nums, self.data.total)
             self.acc1_lst.append(acc1)
             self.acc5_lst.append(acc5)
+            f.write(f"{acc1}\n")
             print(
                 f"SERVER INFO: Global_Epoch[{epoch + 1}|{self.global_epoch}] "
                 f"Top-1_Accuracy: {acc1} Top-5_Accuracy: {acc5}")

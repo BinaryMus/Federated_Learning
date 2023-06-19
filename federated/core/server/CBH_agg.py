@@ -6,7 +6,7 @@ from . import server
 import copy
 
 
-class FLTrust(server.BaseServer):
+class CBH(server.BaseServer):
     def __init__(self, epoch: int, clients: List, model: torch.nn.Module, data: DataLoader, device: str):
         super().__init__(epoch, clients, model, data, device)
         self.para_cache = []
@@ -33,9 +33,10 @@ class FLTrust(server.BaseServer):
                 norm += x*x
         return _1dvector,norm**0.5
 
-    def fltrust(self):
+    def cbh(self):
         agg_para_cache = copy.deepcopy(self.clients[0].model)
-        clear_parameter(agg_para_cache)
+        # clear_parameter(agg_para_cache)
+        self.clients_weight[0] = 1.0
         server_model,self.clients_norm[0] = self.to_1dvector(self.para_cache[0])
         for i in range(1,self.n_clients):
             tmp_model,self.clients_norm[i] = self.to_1dvector(self.para_cache[i])
@@ -53,4 +54,4 @@ class FLTrust(server.BaseServer):
         #     for key in self.para_cache[0]:
         #         self.para_cache[i][key] -= self.model.state_dict()[key]
         # clear_parameter(self.model)
-        self.fltrust()
+        self.cbh()

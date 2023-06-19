@@ -50,10 +50,10 @@ class Multi_Krum(server.BaseServer):
         for i in range(self.n_clients):
             sorted(self.tmp_scores[i])
             self.scores[i][1] = sum(self.tmp_scores[i][:self.n_clients-self.f-2])
-        sorted(self.scores,key = lambda x:x[1])
+        self.scores.sort(key = lambda x:x[1])
 
     def pull(self, client_nums, total):
-        clear_parameter(self.model)
+        # clear_parameter(self.model)
         self.get_score_min()
         # for key in self.model.state_dict():
         #     dtype = self.clients[0].model.state_dict()[key].dtype

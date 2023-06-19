@@ -3,7 +3,7 @@ server:
   port: 9000
 
 # The number of clients
-n_clients: 5
+n_clients: 20
 
 client1:
   ip: "localhost"
@@ -45,10 +45,11 @@ client10:
   ip: "localhost"
   port: 8010
 
+
 # optimizer
 optimizer:
   type: "SGD"
-  lr: 0.1
+  lr: 0.01
 
 # model
 model: "SimpleCNN"
@@ -63,15 +64,15 @@ batch_size: 64
 path: "./datasets"
 
 # the parameter to control NON-IID
-alpha: 0.3
+alpha: 1000000
 
 # local training round
-local_epoch: 2
+local_epoch: 3
 
 # global training round
-global_epoch: 10
+global_epoch: 300
 
-# FedAVG,Krum,Multi_Krum,Median,Trimmed_Mean,FLTrust,My
+# FedAVG,Krum,Multi_Krum,Median,Trimmed_Mean,FLTrust,My,CC,LFH,CBH,NBH,NB,MyM,MyA,MyS
 algorithm: "FLTrust"
 
 # device

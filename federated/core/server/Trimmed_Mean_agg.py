@@ -6,7 +6,7 @@ from . import server
 
 
 class Trimmed_Mean(server.BaseServer):
-    def __init__(self, epoch: int, clients: List, model: torch.nn.Module, data: DataLoader, device: str, f: int = 1):
+    def __init__(self, epoch: int, clients: List, model: torch.nn.Module, data: DataLoader, device: str, f: int = 8):
         super().__init__(epoch, clients, model, data, device)
         self.para_cache = []
         self.f = min(f,(self.n_clients-1)//2)
@@ -32,6 +32,6 @@ class Trimmed_Mean(server.BaseServer):
             dtype = self.model.state_dict()[key].dtype
             self.model.state_dict()[key] += tensor_mean.view(tensor_shape).to(dtype)
     def pull(self, client_nums, total):
-        clear_parameter(self.model)
+        # clear_parameter(self.model)
         self.trimmed_mean()
         #print(self.model.state_dict())

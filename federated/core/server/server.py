@@ -2,6 +2,7 @@ import torch
 from typing import List
 from ..utils import clear_parameter
 from torch.utils.data import DataLoader
+import struct,random
 
 
 class BaseServer:
@@ -21,13 +22,64 @@ class BaseServer:
         self.data = data  # 测试集
         self.device = device
         self.model = model.to(self.device)  # 全局模型
+    
+    def attack(self,attack_type,attack_ratio):
+        attack_clients = min((int)(attack_ratio*self.n_clients)+1,self.n_clients)
+        # print("attack:" + (str)(attack_clients))
+        if attack_type == 0:
+            return
+        elif attack_type == 1:
+            for i in range(1,attack_clients):
+                self.reverse_direction_attack(self.clients[i].model.state_dict())
+        elif attack_type == 2:
+            for i in range(1,attack_clients):
+                self.bit_flipping_attack(self.clients[i].model.state_dict())
+
+
+    # type = 1
+    def reverse_direction_attack(self,model):
+        for key in model:
+            model[key] -= 2 * model[key]
+
+    # type = 2
+
+    def binary(self,num):
+        return ''.join('{:0>8b}'.format(c) for c in struct.pack('!f', num))
+
+    def bin2float(self,bits):
+        return struct.unpack('f',struct.pack('I',int(bits,2)))[0]
+
+    def float_flipping(self,num,max_flipping_counts: int = 4):
+        bin_str = list(self.binary(num))
+        flipping_counts = random.randint(0,max_flipping_counts)
+        # print(flipping_counts)
+        for i in range(flipping_counts):
+            rnd = random.randint(0,31)
+            bin_str[rnd] = '1' if bin_str[rnd] == '0' else '0'
+        return self.bin2float(''.join(bin_str))
+    
+    def bit_flipping_attack(self,model,max_flipping_counts: int = 4):
+        for key in model:
+            tensor_shape = model[key].shape
+            tensor_size = model[key].view(-1).size(0)
+            tensor_attacked = torch.zeros(tensor_size)
+            idx = 0
+            model_key = model[key].view(-1)
+            for idx in range(tensor_size):
+                tensor_attacked[idx] = self.float_flipping(model_key[idx],max_flipping_counts)
+                idx += 1
+            torch.nn.init.zeros_(model[key])
+            model[key] += tensor_attacked.reshape(tensor_shape)
+    
+    # type = 3
+
 
     def pull(self, client_nums, total):
         """
         接受clients参数并聚合
         :return:
         """
-        clear_parameter(self.model)
+        # clear_parameter(self.model)
         for key in self.model.state_dict():
             dtype = self.clients[0].model.state_dict()[key].dtype
             for idx in range(self.n_clients):
