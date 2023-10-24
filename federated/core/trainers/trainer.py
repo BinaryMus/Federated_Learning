@@ -55,6 +55,7 @@ class Trainer:
                                    self.batch_size,
                                    self.path,
                                    self.alpha,
+                                   flipfrac = 0.5
                                    )
         
         self.momentum = [all_arch[model](num_classes=len(self.data.train_set.classes), ) for _ in range(n_clients)]
@@ -107,7 +108,7 @@ class Trainer:
                 for key in self.clients[0].model.state_dict():
                     self.clients[i].model.state_dict()[key] -= self.server.model.state_dict()[key]
 
-            self.server.attack(1,0.4)
+            # self.server.attack(3, 0.4)
 
             acc1, acc5 = self.server.pull_push(self.data.client_nums, self.data.total)
             self.acc1_lst.append(acc1)

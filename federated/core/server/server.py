@@ -3,6 +3,7 @@ from typing import List
 from ..utils import clear_parameter
 from torch.utils.data import DataLoader
 import struct,random
+from scipy.stats import norm as spnorm
 
 
 class BaseServer:
@@ -22,6 +23,7 @@ class BaseServer:
         self.data = data  # 测试集
         self.device = device
         self.model = model.to(self.device)  # 全局模型
+        self.z_max = -1.0
     
     def attack(self,attack_type,attack_ratio):
         attack_clients = min((int)(attack_ratio*self.n_clients)+1,self.n_clients)
@@ -34,7 +36,33 @@ class BaseServer:
         elif attack_type == 2:
             for i in range(1,attack_clients):
                 self.bit_flipping_attack(self.clients[i].model.state_dict())
-
+        elif attack_type == 3:
+            n = self.n_clients - 1
+            m = attack_clients
+            if self.z_max < 0:
+                s = (n + 1) // 2 - m
+                cdf_value = (n - m - s) / (n - m)
+                self.z_max = spnorm.ppf(cdf_value)
+                
+            gradients = []
+            for i in range(1, n - m + 1):
+                gradients.append(torch.cat([value.view(-1) for value in self.clients[i].model.state_dict().values()]))
+            stk_gradients = torch.stack(gradients, dim = 1)
+            mu = torch.mean(stk_gradients, dim = 1)
+            std = torch.std(stk_gradients, dim = 1)
+            alie = mu - std * self.z_max
+            # print(alie)
+            
+            model_state_dict = self.clients[n - m + 1].model.state_dict()
+            
+            start = 0
+            for key, param in model_state_dict.items():
+                end = start + param.numel()
+                param.data = alie[start:end].view(param.shape)
+                start = end
+            # print(model_state_dict)
+            for i in range(n - m + 1, self.n_clients):
+                self.clients[i].model.load_state_dict(model_state_dict)
 
     # type = 1
     def reverse_direction_attack(self,model):

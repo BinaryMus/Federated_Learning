@@ -10,7 +10,7 @@ class Data:
         self.validate_set = None
         self.plot_path = plot_path
 
-    def train_loader(self, alpha, n_clients, batch_size, flag=True):
+    def train_loader(self, alpha, n_clients, batch_size, flag=True, flipfrac: float = 0):
         labels = np.array(self.train_set.targets)
         split_idx = self.split_non_iid(labels, alpha=alpha, n_clients=n_clients)
         data_loader = []
@@ -31,13 +31,15 @@ class Data:
             targets[i] = v[1]
         client_nums = []
         total = 0
+        idx = n_clients
         for i in split_idx:
             total += len(i)
             client_nums.append(len(i))
             data_loader.append(
-                DataLoader(dataset=DatasetNonIID(feature[i], targets[i]),
+                DataLoader(dataset=DatasetNonIID(feature[i], targets[i], idx < n_clients * flipfrac),
                            batch_size=batch_size,
                            shuffle=True), )
+            idx -= 1
         return data_loader, client_nums, total
 
     def validate_loader(self, batch_size):
@@ -58,13 +60,16 @@ class Data:
 
 
 class DatasetNonIID(Dataset):
-    def __init__(self, data, targets):
+    def __init__(self, data, targets, flipflag = False):
         super(DatasetNonIID, self).__init__()
         self.data = data
         self.targets = targets
+        self.flip = flipflag
 
     def __len__(self):
         return len(self.data)
 
     def __getitem__(self, index):
+        if self.flip:
+            return self.data[index], 9 - int(self.targets[index].item())
         return self.data[index], int(self.targets[index].item())

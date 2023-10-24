@@ -49,7 +49,7 @@ client10:
 # optimizer
 optimizer:
   type: "SGD"
-  lr: 0.01
+  lr: 0.1
 
 # model
 model: "SimpleCNN"
@@ -64,16 +64,16 @@ batch_size: 64
 path: "./datasets"
 
 # the parameter to control NON-IID
-alpha: 1000000
+alpha: 0.5
 
 # local training round
 local_epoch: 3
 
 # global training round
-global_epoch: 300
+global_epoch: 10
 
 # FedAVG,Krum,Multi_Krum,Median,Trimmed_Mean,FLTrust,My,CC,LFH,CBH,NBH,NB,MyM,MyA,MyS
-algorithm: "FLTrust"
+algorithm: "FedAVG"
 
 # device
 device: "cpu"

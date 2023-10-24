@@ -26,20 +26,22 @@ class My(server.BaseServer):
         print(self.dim)
     
     def Lp_distance(self,model_a,model_b,p: float = 2):
-        # 将state_dict()中的值转换为张量
-        a_values = torch.cat([param.view(-1) for param in model_a.values()])
-        b_values = torch.cat([param.view(-1) for param in model_b.values()])
-        
-        # 计算Lp范数（Lp距离）
-        diff = a_values - b_values
-        norm = torch.norm(diff, p=p)
-        
-        return norm.item()  # 将结果转回标量
+        dis = 0
+        for x,y in zip(model_a,model_b):
+            dis += (x.item()-y.item())**p
+        return dis**(1.0/p)
 
     def to_1dvector(self,model):
-        _1dvector = torch.cat([value.view(-1) for value in model.values()])
-        norm = torch.norm(_1dvector, p=2)
-        return _1dvector,norm
+        idx = 0
+        norm = 0
+        _1dvector = torch.zeros(self.dim)
+        for key in model:
+            tmp = model[key].view(-1)
+            for x in tmp:
+                _1dvector[idx] += x
+                idx += 1
+                norm += x*x
+        return _1dvector,norm**0.5
 
     def my(self,p: float = 2):
         agg_para_cache = copy.deepcopy(self.clients[0].model)

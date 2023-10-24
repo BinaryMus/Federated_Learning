@@ -19,9 +19,16 @@ class CC(server.BaseServer):
         print(self.dim)
 
     def to_1dvector(self,model):
-        _1dvector = torch.cat([value.view(-1) for value in model.values()])
-        norm = torch.norm(_1dvector, p=2)
-        return _1dvector,norm
+        idx = 0
+        norm = 0
+        _1dvector = torch.zeros(self.dim)
+        for key in model:
+            tmp = model[key].view(-1)
+            for x in tmp:
+                _1dvector[idx] += x
+                idx += 1
+                norm += x*x
+        return _1dvector,norm**0.5
 
     def centered_clipping(self):
         for i in range(self.n_clients):

@@ -2,11 +2,11 @@ import torch
 from typing import List
 from ..utils import clear_parameter
 from torch.utils.data import DataLoader
-from .. import server
+from . import server
 import copy
 
 
-class FLTrust(server.BaseServer):
+class CBH(server.BaseServer):
     def __init__(self, epoch: int, clients: List, model: torch.nn.Module, data: DataLoader, device: str):
         super().__init__(epoch, clients, model, data, device)
         self.para_cache = []
@@ -16,19 +16,27 @@ class FLTrust(server.BaseServer):
         self.clients_weight = [0 for _ in range(self.n_clients)]
         for i in range(self.n_clients):
             self.para_cache.append(clients[i].model.state_dict())
-            
-        self.dim = sum(p.numel() for p in self.model.parameters())
+        self.dim =  0
+        for key in self.model.state_dict():
+            self.dim += self.model.state_dict()[key].view(-1).size(0)
         print(self.dim)
 
     def to_1dvector(self,model):
-        _1dvector = torch.cat([value.view(-1) for value in model.values()])
-        norm = torch.norm(_1dvector, p=2)
-        return _1dvector,norm
+        idx = 0
+        norm = 0
+        _1dvector = torch.zeros(self.dim)
+        for key in model:
+            tmp = model[key].view(-1)
+            for x in tmp:
+                _1dvector[idx] += x
+                idx += 1
+                norm += x*x
+        return _1dvector,norm**0.5
 
-
-    def fltrust(self):
+    def cbh(self):
         agg_para_cache = copy.deepcopy(self.clients[0].model)
-        clear_parameter(agg_para_cache)
+        # clear_parameter(agg_para_cache)
+        self.clients_weight[0] = 1.0
         server_model,self.clients_norm[0] = self.to_1dvector(self.para_cache[0])
         for i in range(1,self.n_clients):
             tmp_model,self.clients_norm[i] = self.to_1dvector(self.para_cache[i])
@@ -46,4 +54,4 @@ class FLTrust(server.BaseServer):
         #     for key in self.para_cache[0]:
         #         self.para_cache[i][key] -= self.model.state_dict()[key]
         # clear_parameter(self.model)
-        self.fltrust()
+        self.cbh()

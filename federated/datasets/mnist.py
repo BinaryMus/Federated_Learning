@@ -11,13 +11,14 @@ class Mnist(Data):
                  path: str,
                  alpha: float = 100,
                  plot_path=None,
-                 flag=False):
+                 flag=False,
+                 flipfrac=0.0):
         super().__init__(plot_path)
         transform = Compose([ToTensor(), Normalize((0.1307,), (0.3081,))])
         self.train_set = MNIST(root=path, train=True, transform=transform)
         self.validate_set = MNIST(root=path, train=False, transform=transform)
         self.trainLoader, self.client_nums, self.total = \
-            self.train_loader(alpha, n_clients, batch_size, flag)
+            self.train_loader(alpha, n_clients, batch_size, flag, flipfrac)
         self.validationLoader = self.validate_loader(batch_size * n_clients)
 
     def __str__(self):
