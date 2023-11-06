@@ -28,7 +28,8 @@ class CC(server.BaseServer):
             tmp,weight = self.to_1dvector(self.para_cache[i])
             weight = min(self.tau/weight,1)
             for key in self.model.state_dict():
-                self.model.state_dict()[key] += (1.0/self.n_clients) * (weight * self.para_cache[i][key])
+                dtype = self.model.state_dict()[key].dtype
+                self.model.state_dict()[key] += ((1.0/self.n_clients) * (weight * self.para_cache[i][key])).to(dtype)
 
     def pull(self, client_nums, total):
         # for i in range(self.n_clients):

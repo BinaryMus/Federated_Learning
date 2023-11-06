@@ -36,10 +36,12 @@ class FLTrust(server.BaseServer):
             self.clients_weight[i] = cos_theta if cos_theta > 0 else 0
             if cos_theta > 0:
                 for key in self.para_cache[i]:
-                    agg_para_cache.state_dict()[key] += cos_theta*self.clients_norm[0]/self.clients_norm[i] * self.para_cache[i][key]
+                    dtype = self.clients[0].model.state_dict()[key].dtype
+                    agg_para_cache.state_dict()[key] += (cos_theta*self.clients_norm[0]/self.clients_norm[i] * self.para_cache[i][key]).to(dtype)
         normalized = 1/sum(self.clients_weight)
         for key in self.model.state_dict():
-            self.model.state_dict()[key] += normalized * agg_para_cache.state_dict()[key]
+            dtype = self.model.state_dict()[key].dtype
+            self.model.state_dict()[key] += (normalized * agg_para_cache.state_dict()[key]).to(dtype)
 
     def pull(self, client_nums, total):
         # for i in range(self.n_clients):

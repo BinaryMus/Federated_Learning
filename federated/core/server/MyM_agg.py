@@ -73,7 +73,8 @@ class MyM(server.BaseServer):
         select_set.append(0)
         for i in select_set:
             for key in self.model.state_dict():
-                self.model.state_dict()[key] += self.round_final_weight[i] * self.para_cache[i][key]
+                dtype = self.model.state_dict()[key].dtype
+                self.model.state_dict()[key] += (self.round_final_weight[i] * self.para_cache[i][key]).to(dtype)
 
     def pull(self, client_nums, total):
         # for i in range(self.n_clients):
