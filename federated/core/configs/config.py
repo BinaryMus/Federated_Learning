@@ -25,5 +25,8 @@ class Config:
                           local_epoch=self.config["local_epoch"],
                           global_epoch=self.config["global_epoch"],
                           algorithm=self.config["algorithm"],
-                          device=self.config["device"])
+                          device=self.config["device"],
+                          atk=self.config["atk"],
+                          frac=self.config["frac"],
+                          filefolder=self.config["filefolder"])
         trainer.train()

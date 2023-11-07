@@ -33,6 +33,9 @@ class Trainer:
                  alpha: float,
                  local_epoch: int,
                  global_epoch: int,
+                 atk: int,
+                 frac: float,
+                 filefolder: str,
                  device: str = "cuda",
                  algorithm: str = "FedAVG",
                  ):
@@ -50,12 +53,15 @@ class Trainer:
         self.algorithm = algorithm  # 算法
         self.acc1_lst = []
         self.acc5_lst = []
+        self.atk = atk
+        self.frac = frac
+        self.filefolder = filefolder
 
         self.data = all_data[data](self.n_clients,
                                    self.batch_size,
                                    self.path,
                                    self.alpha,
-                                   flipfrac = 0.5
+                                   flipfrac = 0
                                    )
         
         self.momentum = [all_arch[model](num_classes=len(self.data.train_set.classes), ) for _ in range(n_clients)]
@@ -88,7 +94,8 @@ class Trainer:
 
     def train(self):
         print("TRAINER INFO: Start Training!")
-        folders = "experiment/20c_reverse/0.4/20c_iid_0.4reverse_500epoch_lr=0.01/"
+        folders = "experiment/" + self.filefolder
+        # folders = "experiment/20c_reverse/0.4_iid_100epoch_lr=0.01/"
         # folders = "experiment/20c_nonbyz/20c_iid_500epoch_lr=0.01/"
         attack_info = ""
         f =  open(folders + (str)(self.algorithm) + "_" + (str)(self.global_epoch) + attack_info + ".txt","w")
@@ -108,7 +115,7 @@ class Trainer:
                 for key in self.clients[0].model.state_dict():
                     self.clients[i].model.state_dict()[key] -= self.server.model.state_dict()[key]
 
-            # self.server.attack(3, 0.4)
+            self.server.attack(self.atk, self.frac)
 
             acc1, acc5 = self.server.pull_push(self.data.client_nums, self.data.total)
             self.acc1_lst.append(acc1)
