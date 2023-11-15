@@ -6,7 +6,7 @@ from federated.core.utils import seed_it
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', default="./config.yml", type=str, help='config file')
+    parser.add_argument('--config', default="./config_mp.yml", type=str, help='config file')
     parser.add_argument('--seed', default=42, type=int)
     parser.add_argument('--algo', default='FedAVG', type=str)
     parser.add_argument('--atk', default=0, type=int)

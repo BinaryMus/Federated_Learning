@@ -17,30 +17,47 @@ class Median(server.BaseServer):
             self.dim += self.model.state_dict()[key].view(-1).size(0)
         print(self.dim)
 
+    # def median(self):
+    #     flag = True
+    #     for key in self.para_cache[0]:
+    #         tensor_shape = self.para_cache[0][key].shape
+    #         tensor_size = self.para_cache[0][key].view(-1).size(0)
+    #         tensor_median = torch.zeros(tensor_size)
+    #         tensor_all_clients = [[] for _ in range(tensor_size)]
+    #         for i in range(self.n_clients):
+    #             m = self.para_cache[i][key].view(-1)
+    #             for x in range(tensor_size):
+    #                 tensor_all_clients[x].append(m[x])
+    #         for i in range(tensor_size):
+    #             tensor_all_clients[i].sort()
+    #             if flag:
+    #                 # print(tensor_all_clients[i])
+    #                 flag = False
+    #             if (self.n_clients & 1) == 1:
+    #                 tensor_median[i] = tensor_all_clients[i][self.n_clients//2]
+    #             else:
+    #                 tensor_median[i] = (tensor_all_clients[i][self.n_clients//2]+tensor_all_clients[i][self.n_clients//2-1])/2
+    #             # tensor_median[i] = float(np.median(tensor_all_clients[i]))
+    #         dtype = self.model.state_dict()[key].dtype
+    #         # print(tensor_median)
+    #         self.model.state_dict()[key] += tensor_median.view(tensor_shape).to(dtype)
     def median(self):
-        flag = True
         for key in self.para_cache[0]:
             tensor_shape = self.para_cache[0][key].shape
             tensor_size = self.para_cache[0][key].view(-1).size(0)
-            tensor_median = torch.zeros(tensor_size)
-            tensor_all_clients = [[] for _ in range(tensor_size)]
-            for i in range(self.n_clients):
-                m = self.para_cache[i][key].view(-1)
-                for x in range(tensor_size):
-                    tensor_all_clients[x].append(m[x])
-            for i in range(tensor_size):
-                tensor_all_clients[i].sort()
-                if flag:
-                    # print(tensor_all_clients[i])
-                    flag = False
-                if (self.n_clients & 1) == 1:
-                    tensor_median[i] = tensor_all_clients[i][self.n_clients//2]
-                else:
-                    tensor_median[i] = (tensor_all_clients[i][self.n_clients//2]+tensor_all_clients[i][self.n_clients//2-1])/2
-                # tensor_median[i] = float(np.median(tensor_all_clients[i]))
+            tensor_median = torch.zeros(tensor_size, dtype=self.model.state_dict()[key].dtype)
+            
+            all_parameters = torch.stack([self.para_cache[i][key].view(-1) for i in range(self.n_clients)])
+            sorted_parameters, _ = torch.sort(all_parameters, dim=0)
+            
+            if self.n_clients % 2 == 1:
+                tensor_median = sorted_parameters[self.n_clients // 2]
+            else:
+                tensor_median = (sorted_parameters[self.n_clients // 2] + sorted_parameters[(self.n_clients // 2) - 1]) / 2
+            
             dtype = self.model.state_dict()[key].dtype
-            # print(tensor_median)
             self.model.state_dict()[key] += tensor_median.view(tensor_shape).to(dtype)
+        
     def pull(self, client_nums, total):
         # clear_parameter(self.model)
         self.median()

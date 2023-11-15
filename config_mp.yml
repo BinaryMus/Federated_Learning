@@ -49,31 +49,31 @@ client10:
 # optimizer
 optimizer:
   type: "SGD"
-  lr: 0.1
+  lr: 0.05
 
 # model
-model: "SimpleCNN"
+model: "ResNet18"
 
 # dataset
-data: "MNIST"
+data: "CIFAR10"
 
 # mini-batch size
-batch_size: 64
+batch_size: 128
 
 # the path of dataset
 path: "./datasets"
 
 # the parameter to control NON-IID
-alpha: 0.5
+alpha: 1000000
 
 # local training round
 local_epoch: 3
 
 # global training round
-global_epoch: 10
+global_epoch: 100
 
 # FedAVG,Krum,Multi_Krum,Median,Trimmed_Mean,FLTrust,My,CC,LFH,CBH,NBH,NB,MyM,MyA,MyS
-algorithm: "FedAVG"
+algorithm: "Krum"
 
 # device
-device: "cpu"
+device: "cuda"
